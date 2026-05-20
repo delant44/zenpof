@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Abdos & Fessiers — 30 min</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap');
+:root {
+  --bg:#0f0e16; --surface:#161520; --card:#1c1b28;
+  --ink:#e8e4f0; --warm:#9b7fd4; --accent:#c4a0e8;
+  --muted:#6b6480; --line:#2a2838; --active:#4a9b7f;
+  --fire:#e8834a; --fire-dim:rgba(232,131,74,.15);
+  --gold:#f0d080;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh;}
+
+/* ── HEADER ── */
+header{padding:40px 32px 28px;border-bottom:1px solid var(--line);position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(232,131,74,.08) 0%,transparent 65%);pointer-events:none;}
+header::after{content:'';position:absolute;bottom:-40px;left:20%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(155,127,212,.06) 0%,transparent 60%);pointer-events:none;}
+.header-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:10px;}
+header h1{font-size:clamp(32px,8vw,68px);font-weight:300;line-height:1;letter-spacing:-1px;margin-bottom:8px;}
+header h1 em{font-style:italic;color:var(--fire);}
+.header-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line);}
+.stat{padding:16px 20px;border-right:1px solid var(--line);}
+.stat:last-child{border-right:none;}
+.stat-val{font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--fire);line-height:1;margin-bottom:3px;}
+.stat-label{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr);}.stat:nth-child(2){border-right:none;}.stat:nth-child(3){border-top:1px solid var(--line);}}
+
+/* ── TIMER BAR ── */
+.timer-bar{position:sticky;top:0;z-index:200;background:#0a0910;border-bottom:1px solid var(--line);padding:12px 24px;display:flex;align-items:center;gap:14px;}
+.timer-display{font-family:'DM Mono',monospace;font-size:26px;letter-spacing:2px;color:var(--ink);min-width:84px;}
+.timer-display.running{color:#7fc99a;}
+.timer-display.done{color:var(--gold);}
+.timer-info{flex:1;overflow:hidden;}
+.timer-info strong{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.timer-info span{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.timer-btns{display:flex;gap:8px;flex-shrink:0;}
+.btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:7px 14px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn:hover{background:var(--fire-dim);}
+.btn.primary{background:var(--fire);border-color:var(--fire);color:#fff5f0;}
+.btn.primary:hover{background:#f09460;}
+.btn.stop{border-color:rgba(200,100,100,.3);color:#e08080;}
+.btn.stop:hover{background:rgba(200,100,100,.1);}
+.progress-track{position:absolute;bottom:0;left:0;height:2px;background:rgba(232,131,74,.12);width:100%;}
+.progress-fill{height:100%;background:var(--fire);transition:width 1s linear;width:0%;}
+
+/* ══════ FOCUS MODE ══════ */
+#focusMode{display:none;position:fixed;inset:0;z-index:300;background:var(--bg);flex-direction:column;overflow:hidden;color:var(--ink);}
+#focusMode.visible{display:flex;}
+.focus-topbar{background:#0a0910;border-bottom:1px solid var(--line);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;position:relative;}
+.focus-timer{font-family:'DM Mono',monospace;font-size:22px;letter-spacing:2px;min-width:76px;color:var(--ink);}
+.focus-timer.running{color:#7fc99a;}
+.focus-progress-track{position:absolute;bottom:0;left:0;height:2px;background:rgba(232,131,74,.12);width:100%;}
+.focus-progress-fill{height:100%;background:var(--fire);transition:width 1s linear;}
+.focus-topbar .timer-info{flex:1;}
+.focus-topbar .timer-info strong{font-size:14px;color:var(--ink);}
+.focus-close{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;}
+.focus-close:hover{color:var(--ink);border-color:var(--fire);}
+
+.focus-hero{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;padding:12px 24px 0;border-bottom:2px solid var(--active);background:var(--surface);}
+.focus-ex-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;}
+.focus-ex-name{font-size:clamp(22px,5vw,36px);font-weight:300;letter-spacing:-.5px;text-align:center;margin-bottom:4px;color:var(--fire);}
+.focus-ex-type{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+.focus-ex-type.circuit{color:var(--warm);}
+.focus-ex-type.intervalle{color:var(--fire);}
+.focus-ex-type.repos{color:var(--muted);}
+.focus-ex-time-badge{font-family:'DM Mono',monospace;font-size:32px;color:var(--active);letter-spacing:2px;margin-bottom:8px;}
+.focus-ex-time-badge.urgent{color:#e08080;animation:pulse .6s ease-in-out infinite alternate;}
+@keyframes pulse{from{opacity:1;}to{opacity:.35;}}
+.focus-svg-wrap{display:flex;align-items:center;justify-content:center;width:100%;padding:8px 0 10px;}
+.focus-svg-wrap svg{width:min(300px,88vw);height:auto;}
+.focus-ex-desc{font-size:13px;font-style:italic;color:var(--muted);text-align:center;max-width:440px;line-height:1.7;padding:0 0 10px;}
+
+.focus-next-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:10px 20px 6px;flex-shrink:0;border-top:1px solid var(--line);}
+.focus-queue{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.focus-queue-item{display:flex;align-items:center;gap:12px;padding:9px 20px;border-bottom:1px solid var(--line);}
+.focus-queue-item.done-item{opacity:.35;}
+.focus-queue-item.repos-item{opacity:.7;}
+.q-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;min-width:24px;}
+.q-svg{flex-shrink:0;width:56px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--card);overflow:hidden;}
+.q-svg svg{width:56px;height:36px;}
+.q-info{flex:1;}
+.q-name{font-size:14px;color:var(--ink);}
+.q-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--fire);}
+.q-type-badge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;padding:2px 6px;border-radius:2px;}
+.q-type-badge.circuit{background:rgba(155,127,212,.2);color:var(--warm);}
+.q-type-badge.intervalle{background:var(--fire-dim);color:var(--fire);}
+.q-type-badge.repos{background:rgba(107,100,128,.15);color:var(--muted);}
+.q-done-mark{font-size:14px;color:var(--muted);}
+
+.focus-finish{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;}
+.focus-finish.visible{display:flex;}
+.focus-finish h2{font-size:clamp(32px,8vw,64px);font-weight:300;font-style:italic;color:var(--fire);margin-bottom:12px;}
+.focus-finish p{font-size:16px;color:var(--muted);margin-bottom:32px;line-height:1.7;}
+
+/* ── LIST VIEW ── */
+#listView{padding-bottom:60px;}
+.section{margin:28px 28px 0;}
+.section-header{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line);}
+.section-num{font-family:'DM Mono',monospace;font-size:10px;color:var(--fire);letter-spacing:2px;}
+.section-title{font-size:20px;font-weight:300;font-style:italic;color:var(--ink);}
+.section-duration{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-left:auto;}
+.section-note{font-size:12px;font-style:italic;color:var(--muted);margin-bottom:14px;padding:10px 14px;border-left:2px solid var(--fire);background:var(--fire-dim);}
+
+.exercises{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;}
+.ex{background:var(--card);border-left:2px solid var(--line);cursor:pointer;transition:all .2s;position:relative;user-select:none;overflow:hidden;}
+.ex:hover{border-left-color:var(--fire);background:#201e2e;}
+.ex.active{border-left-color:var(--active);background:#162420;}
+.ex.done{border-left-color:var(--muted);opacity:.5;}
+.ex.repos-card{border-left-color:var(--muted);opacity:.8;cursor:default;}
+.ex.repos-card:hover{background:var(--card);border-left-color:var(--muted);}
+.ex-illus{display:flex;align-items:center;justify-content:center;background:var(--surface);padding:14px;border-bottom:1px solid var(--line);}
+.ex-illus svg{display:block;}
+.ex-body{padding:12px 14px;}
+.ex-header{display:flex;align-items:center;gap:10px;margin-bottom:5px;}
+.ex-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;min-width:20px;}
+.ex-name{font-size:16px;font-weight:400;flex:1;color:var(--ink);}
+.ex-time{font-family:'DM Mono',monospace;font-size:11px;color:var(--fire);}
+.ex-badge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;padding:2px 6px;border-radius:2px;margin-bottom:6px;display:inline-block;}
+.ex-badge.circuit{background:rgba(155,127,212,.2);color:var(--warm);}
+.ex-badge.intervalle{background:var(--fire-dim);color:var(--fire);}
+.ex-badge.repos{background:rgba(107,100,128,.15);color:var(--muted);}
+.ex-desc{font-size:11px;color:var(--muted);line-height:1.6;font-style:italic;}
+.ex-check{position:absolute;top:8px;right:8px;width:17px;height:17px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;background:var(--card);z-index:2;}
+.ex.done .ex-check{background:var(--muted);border-color:var(--muted);color:white;}
+.ex.active .ex-check{background:var(--active);border-color:var(--active);color:white;}
+.divider{height:1px;background:var(--line);margin:28px;}
+.footer{padding:20px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.reset-btn{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:9px 18px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
+.reset-btn:hover{border-color:var(--fire);color:var(--fire);}
+.footer-note{font-size:12px;font-style:italic;color:var(--muted);}
+@media(max-width:600px){
+  header,.section,.footer{padding-left:16px;padding-right:16px;}
+  .section{margin-left:16px;margin-right:16px;}
+  .divider{margin:20px 16px;}
+  .timer-bar{padding:10px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ FOCUS MODE ══════════ -->
+<div id="focusMode">
+  <div class="focus-topbar">
+    <div class="focus-timer" id="focusTimer">30:00</div>
+    <div class="timer-info">
+      <strong id="focusExName">—</strong>
+      <span id="focusExMeta">—</span>
+    </div>
+    <button class="focus-close" onclick="exitFocus()">✕ Réduire</button>
+    <div class="focus-progress-track"><div class="focus-progress-fill" id="focusProgressFill"></div></div>
+  </div>
+  <div class="focus-hero" id="focusHero">
+    <div class="focus-ex-num" id="focusNum">—</div>
+    <div class="focus-ex-name" id="focusName">—</div>
+    <div class="focus-ex-type" id="focusType">—</div>
+    <div class="focus-ex-time-badge" id="focusExTimer">—</div>
+    <div class="focus-svg-wrap" id="focusSvg"></div>
+    <div class="focus-ex-desc" id="focusDesc">—</div>
+  </div>
+  <div class="focus-next-label" id="focusNextLabel">À SUIVRE</div>
+  <div class="focus-queue" id="focusQueue"></div>
+  <div class="focus-finish" id="focusFinish">
+    <h2>Séance terminée 🔥</h2>
+    <p>30 min d'abdos &amp; fessiers complétées.<br>Muscles travaillés, trail renforcé.</p>
+    <button class="btn primary" onclick="resetAll()">↺ Recommencer</button>
+  </div>
+</div>
+
+<!-- ══════════ LIST VIEW ══════════ -->
+<div id="listView">
+<header>
+  <div class="header-label">Renforcement · Trail GRF92k</div>
+  <h1>Abdos &amp;<br><em>Fessiers</em></h1>
+  <div class="header-meta">
+    <span>🔥 30 min</span>
+    <span>💪 Débutant</span>
+    <span>🎯 Core · Fessiers · Stabilité</span>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="stat-val">3</div><div class="stat-label">Blocs</div></div>
+  <div class="stat"><div class="stat-val">18</div><div class="stat-label">Exercices</div></div>
+  <div class="stat"><div class="stat-val">3×</div><div class="stat-label">Pauses actives</div></div>
+  <div class="stat"><div class="stat-val">30</div><div class="stat-label">Minutes</div></div>
+</div>
+
+<div class="timer-bar">
+  <div class="timer-display" id="timerDisplay">30:00</div>
+  <div class="timer-info">
+    <strong id="currentExName">Prêt à commencer</strong>
+    <span id="currentExMeta">Appuie sur Démarrer</span>
+  </div>
+  <div class="timer-btns">
+    <button class="btn primary" id="startBtn" onclick="startRoutine()">Démarrer</button>
+    <button class="btn stop" id="stopBtn" onclick="stopRoutine()" style="display:none">Pause</button>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<!-- BLOC 1 : ÉCHAUFFEMENT -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">Échauffement — circuit</span>
+    <span class="section-duration">5 min</span>
+  </div>
+  <div class="section-note">Circuit enchaîné sans pause. Allure modérée pour réveiller les muscles.</div>
+  <div class="exercises">
+
+    <div class="ex" id="ex-0" onclick="toggleDone(0)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- marche sur place genoux hauts -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="80" cy="14" r="8" fill="#e8e4f0"/>
+          <rect x="73" y="22" width="14" height="22" rx="4" fill="#e8e4f0"/>
+          <!-- bras opposés en balancé -->
+          <line x1="73" y1="28" x2="54" y2="44" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <line x1="87" y1="28" x2="106" y2="38" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- genou gauche levé haut -->
+          <line x1="73" y1="44" x2="62" y2="56" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="62" y1="56" x2="58" y2="74" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- genou droit monté -->
+          <line x1="87" y1="44" x2="96" y2="52" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="100" cy="50" rx="8" ry="6" fill="#e8e4f0"/>
+          <line x1="96" y1="58" x2="90" y2="74" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- flèche genou haut -->
+          <line x1="100" y1="44" x2="100" y2="30" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <polygon points="100,30 97,36 103,36" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">01</span><span class="ex-name">Montées de genoux</span><span class="ex-time">45s</span></div>
+        <div class="ex-badge circuit">CIRCUIT</div>
+        <div class="ex-desc">Sur place, genoux montés à hauteur des hanches. Bras opposé en avant. Allure modérée. Active les fléchisseurs et le cardio.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-1" onclick="toggleDone(1)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- squat poids du corps -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="80" cy="16" r="8" fill="#e8e4f0"/>
+          <rect x="73" y="24" width="14" height="18" rx="4" fill="#e8e4f0"/>
+          <!-- bras tendus devant -->
+          <line x1="73" y1="30" x2="46" y2="36" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <line x1="87" y1="30" x2="114" y2="36" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- cuisses fléchies à 90° -->
+          <line x1="73" y1="42" x2="52" y2="58" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="87" y1="42" x2="108" y2="58" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- genoux -->
+          <circle cx="50" cy="60" r="6" fill="#e8e4f0"/>
+          <circle cx="110" cy="60" r="6" fill="#e8e4f0"/>
+          <!-- tibias verticaux -->
+          <line x1="50" y1="66" x2="52" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <line x1="110" y1="66" x2="108" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- flèche descente -->
+          <line x1="80" y1="40" x2="80" y2="56" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <polygon points="80,56 77,50 83,50" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">02</span><span class="ex-name">Squat poids du corps</span><span class="ex-time">45s</span></div>
+        <div class="ex-badge circuit">CIRCUIT</div>
+        <div class="ex-desc">Pieds écartés largeur épaules, bras devant. Descend jusqu'à 90° genoux, dos droit. Remonte en serrant les fessiers. 12-15 répétitions.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-2" onclick="toggleDone(2)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- rotations de bassin debout -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="80" cy="14" r="8" fill="#e8e4f0"/>
+          <rect x="73" y="22" width="14" height="20" rx="4" fill="#e8e4f0"/>
+          <!-- mains sur hanches -->
+          <ellipse cx="60" cy="38" rx="7" ry="5" fill="#e8e4f0"/>
+          <ellipse cx="100" cy="38" rx="7" ry="5" fill="#e8e4f0"/>
+          <!-- bassin en ellipse rotation -->
+          <ellipse cx="80" cy="46" rx="18" ry="10" fill="#e8e4f0" opacity=".3"/>
+          <ellipse cx="80" cy="46" rx="18" ry="10" stroke="#e8834a" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/>
+          <polygon points="98,46 94,42 96,50" fill="#e8834a"/>
+          <!-- jambes -->
+          <line x1="73" y1="52" x2="66" y2="72" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="87" y1="52" x2="94" y2="72" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="66" y1="72" x2="64" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <line x1="94" y1="72" x2="96" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">03</span><span class="ex-name">Rotations de bassin</span><span class="ex-time">30s</span></div>
+        <div class="ex-badge circuit">CIRCUIT</div>
+        <div class="ex-desc">Debout, mains sur les hanches. Grands cercles de bassin dans les deux sens. 10 dans chaque sens. Active les lombaires et les obliques.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-3" onclick="toggleDone(3)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- pont fessier échauffement -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="22" cy="62" r="8" fill="#e8e4f0"/>
+          <rect x="28" y="68" width="26" height="8" rx="4" fill="#e8e4f0"/>
+          <path d="M54 72 Q76 44 104 68" stroke="#e8e4f0" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <line x1="104" y1="72" x2="120" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="94" y1="76" x2="102" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="30" y1="74" x2="28" y2="88" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <line x1="50" y1="74" x2="56" y2="88" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <line x1="76" y1="52" x2="76" y2="34" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <polygon points="76,34 73,40 79,40" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">04</span><span class="ex-name">Pont fessier lent</span><span class="ex-time">45s</span></div>
+        <div class="ex-badge circuit">CIRCUIT</div>
+        <div class="ex-desc">Sur le dos, genoux fléchis. Monte les hanches lentement en 3s, tiens 1s, descends en 3s. 6-8 répétitions. Réveille les fessiers en douceur.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-4" onclick="toggleDone(4)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- dead bug échauffement -->
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="20" cy="52" r="8" fill="#e8e4f0"/>
+          <rect x="26" y="56" width="48" height="9" rx="4" fill="#e8e4f0"/>
+          <!-- bras gauche levé vertical -->
+          <line x1="36" y1="58" x2="28" y2="34" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="26" cy="30" rx="5" ry="5" fill="#e8e4f0"/>
+          <!-- bras droit levé -->
+          <line x1="60" y1="58" x2="70" y2="36" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="72" cy="32" rx="5" ry="5" fill="#e8e4f0"/>
+          <!-- jambe gauche tendue levée -->
+          <line x1="44" y1="64" x2="36" y2="48" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="34" cy="44" rx="7" ry="5" fill="#e8e4f0" transform="rotate(-30 34 44)"/>
+          <!-- jambe droite fléchie 90° -->
+          <line x1="64" y1="64" x2="88" y2="56" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="88" y1="56" x2="100" y2="68" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- flèche coordination -->
+          <path d="M80 44 Q90 36 96 46" stroke="#e8834a" stroke-width="1.5" fill="none"/>
+          <polygon points="96,46 90,46 93,40" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">05</span><span class="ex-name">Dead bug</span><span class="ex-time">45s</span></div>
+        <div class="ex-badge circuit">CIRCUIT</div>
+        <div class="ex-desc">Sur le dos, bras et jambes levés à 90°. Abaisse simultanément bras gauche + jambe droite sans toucher le sol. Alterner. 8 de chaque côté. Coordination core.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="divider"></div>
+
+<!-- BLOC 2 : INTERVALLES ABDOS -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">Abdominaux — intervalles</span>
+    <span class="section-duration">13 min</span>
+  </div>
+  <div class="section-note">Format : 40s effort / 20s repos. Trois séries de 4 exercices enchaînés.</div>
+  <div class="exercises">
+
+    <div class="ex" id="ex-5" onclick="toggleDone(5)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- crunch classique -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <!-- jambes fléchies au sol -->
+          <line x1="90" y1="72" x2="120" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="100" y1="68" x2="128" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- bas du dos au sol -->
+          <rect x="54" y="76" width="42" height="8" rx="4" fill="#e8e4f0"/>
+          <!-- torse soulevé -->
+          <path d="M56 76 Q50 62 42 52" stroke="#e8e4f0" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <!-- tête -->
+          <circle cx="38" cy="46" r="8" fill="#e8e4f0"/>
+          <!-- mains derrière tête -->
+          <line x1="38" y1="44" x2="30" y2="38" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <line x1="38" y1="44" x2="48" y2="38" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <!-- flèche enroulement -->
+          <path d="M56 76 Q46 66 40 52" stroke="#e8834a" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/>
+          <polygon points="40,52 44,58 37,57" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">06</span><span class="ex-name">Crunch classique</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">Sur le dos, genoux fléchis. Mains derrière la tête, enroule le torse vers les genoux. Expire en montant. Ne tire pas sur la nuque. Droits abdominaux.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-6" onclick="toggleDone(6)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- crunch oblique -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <line x1="90" y1="72" x2="120" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="100" y1="68" x2="128" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <rect x="54" y="76" width="42" height="8" rx="4" fill="#e8e4f0"/>
+          <!-- torse enroulé en diagonale -->
+          <path d="M56 76 Q48 60 34 48" stroke="#e8e4f0" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <circle cx="30" cy="42" r="8" fill="#e8e4f0"/>
+          <!-- coude vers genou opposé -->
+          <line x1="30" y1="44" x2="50" y2="56" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="54" cy="58" rx="6" ry="5" fill="#e8e4f0"/>
+          <!-- flèche diagonale -->
+          <path d="M60 74 Q50 62 38 50" stroke="#e8834a" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/>
+          <polygon points="38,50 44,54 38,58" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">07</span><span class="ex-name">Crunch oblique</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">Même position. Coude droit vers genou gauche en remontant, puis alterner. Rotation du torse. Obliques internes et externes. 20 alternances.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-7" onclick="toggleDone(7)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- relevé de jambes -->
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="20" cy="58" r="8" fill="#e8e4f0"/>
+          <rect x="26" y="62" width="50" height="9" rx="4" fill="#e8e4f0"/>
+          <!-- bras le long du corps -->
+          <line x1="30" y1="68" x2="28" y2="82" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <line x1="72" y1="68" x2="76" y2="82" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <!-- jambes levées à 45° -->
+          <line x1="60" y1="70" x2="100" y2="44" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="66" y1="70" x2="110" y2="42" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="104" cy="40" rx="9" ry="5" fill="#e8e4f0" transform="rotate(-25 104 40)"/>
+          <ellipse cx="114" cy="38" rx="9" ry="5" fill="#e8e4f0" transform="rotate(-25 114 38)"/>
+          <!-- flèche montée -->
+          <line x1="108" y1="46" x2="116" y2="28" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <polygon points="116,28 112,34 118,34" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">08</span><span class="ex-name">Relevé de jambes</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">Sur le dos, jambes tendues. Monte les jambes à 90° (ou 45° si difficile), redescends sans poser. Bas abdominaux et fléchisseurs de hanche. 10-12 reps.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-8" onclick="toggleDone(8)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- planche dynamique — mountain climber lent -->
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="22" cy="40" r="8" fill="#e8e4f0"/>
+          <line x1="28" y1="46" x2="46" y2="54" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <rect x="42" y="50" width="74" height="10" rx="5" fill="#e8e4f0"/>
+          <line x1="42" y1="54" x2="28" y2="62" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- jambe gauche ramenée sous poitrine -->
+          <line x1="116" y1="56" x2="90" y2="68" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="86" cy="70" rx="8" ry="5" fill="#e8e4f0"/>
+          <!-- jambe droite tendue -->
+          <line x1="116" y1="58" x2="140" y2="66" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="144" cy="68" rx="8" ry="5" fill="#e8e4f0"/>
+          <!-- flèche -->
+          <path d="M90 64 Q100 54 110 58" stroke="#e8834a" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/>
+          <polygon points="110,58 104,56 106,62" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">09</span><span class="ex-name">Mountain climber lent</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">En planche haute (bras tendus). Ramène un genou vers la poitrine lentement, retourne, alterner. Contrôle le bassin. Core complet + épaules.</div>
+      </div>
+    </div>
+
+    <!-- PAUSE ACTIVE -->
+    <div class="ex repos-card" id="ex-9">
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="80" cy="22" r="8" fill="#e8e4f0" opacity=".6"/>
+          <rect x="73" y="30" width="14" height="22" rx="4" fill="#e8e4f0" opacity=".6"/>
+          <line x1="73" y1="36" x2="56" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="87" y1="36" x2="104" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="73" y1="52" x2="66" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+          <line x1="87" y1="52" x2="94" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+          <line x1="66" y1="70" x2="64" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="94" y1="70" x2="96" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <path d="M60 44 Q70 36 80 44 Q90 52 100 44" stroke="#9b7fd4" stroke-width="1.5" fill="none" stroke-dasharray="3 2" opacity=".6"/>
+          <path d="M55 38 Q70 26 85 38" stroke="#9b7fd4" stroke-width="1" fill="none" stroke-dasharray="3 2" opacity=".3"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">—</span><span class="ex-name">Pause active</span><span class="ex-time">90s</span></div>
+        <div class="ex-badge repos">RÉCUP</div>
+        <div class="ex-desc">Marche sur place, respiration profonde. Secoue les bras et les jambes. Prépare le bloc suivant.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-10" onclick="toggleDone(10)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- hollow body hold -->
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="20" cy="50" r="8" fill="#e8e4f0"/>
+          <!-- corps en banane creuse -->
+          <path d="M26 54 Q80 68 140 50" stroke="#e8e4f0" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <!-- bras tendus au-dessus tête -->
+          <line x1="26" y1="52" x2="10" y2="38" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="8" cy="35" rx="5" ry="5" fill="#e8e4f0"/>
+          <!-- jambes légèrement levées -->
+          <line x1="130" y1="52" x2="148" y2="44" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="152" cy="42" rx="7" ry="5" fill="#e8e4f0" transform="rotate(-15 152 42)"/>
+          <!-- creux lombaire — ligne pointillée -->
+          <line x1="70" y1="62" x2="70" y2="74" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <text x="72" y="78" font-family="monospace" font-size="7" fill="#e8834a">creux</text>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">10</span><span class="ex-name">Hollow body hold</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">Sur le dos. Bras au-dessus de la tête, jambes légèrement levées, lombes collés au sol. Tiens la position. Core profond et transverse.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-11" onclick="toggleDone(11)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- side crunch allongé -->
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <!-- corps sur le côté -->
+          <circle cx="20" cy="54" r="8" fill="#e8e4f0"/>
+          <path d="M26 58 Q80 68 130 62" stroke="#e8e4f0" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <!-- torse soulevé latéralement -->
+          <path d="M26 56 Q30 44 36 38" stroke="#e8e4f0" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <!-- main sur tête -->
+          <line x1="36" y1="40" x2="26" y2="32" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <!-- bras appui au sol -->
+          <line x1="26" y1="58" x2="20" y2="70" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <!-- jambes empilées côté -->
+          <line x1="130" y1="64" x2="148" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="125" y1="67" x2="144" y2="74" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- flèche latérale -->
+          <line x1="30" y1="52" x2="26" y2="38" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <polygon points="26,38 28,44 22,44" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">11</span><span class="ex-name">Crunch latéral</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">Sur le côté, jambes empilées. Soulève le torse latéralement, tiens 1s, redescends. 15 de chaque côté. Obliques ciblés.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-12" onclick="toggleDone(12)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- planche avant tenue -->
+          <line x1="10" y1="78" x2="150" y2="78" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="22" cy="44" r="8" fill="#e8e4f0"/>
+          <line x1="28" y1="50" x2="48" y2="58" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <rect x="44" y="50" width="86" height="10" rx="5" fill="#e8e4f0"/>
+          <line x1="44" y1="54" x2="30" y2="64" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="134" cy="64" rx="8" ry="5" fill="#e8e4f0"/>
+          <line x1="20" y1="40" x2="138" y2="40" stroke="#e8834a" stroke-width="1" stroke-dasharray="4 2" opacity=".7"/>
+          <!-- chrono -->
+          <text x="80" y="36" font-family="monospace" font-size="8" fill="#e8834a" text-anchor="middle">40s</text>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">12</span><span class="ex-name">Planche avant tenue</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">Avant-bras au sol, corps aligné, fessiers serrés. Tiens 40s sans bouger. Si trop dur : genoux au sol. Core complet, stabilisateurs.</div>
+      </div>
+    </div>
+
+    <!-- PAUSE ACTIVE 2 -->
+    <div class="ex repos-card" id="ex-13">
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="80" cy="22" r="8" fill="#e8e4f0" opacity=".6"/>
+          <rect x="73" y="30" width="14" height="22" rx="4" fill="#e8e4f0" opacity=".6"/>
+          <line x1="73" y1="36" x2="56" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="87" y1="36" x2="104" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="73" y1="52" x2="66" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+          <line x1="87" y1="52" x2="94" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+          <line x1="66" y1="70" x2="64" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="94" y1="70" x2="96" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <path d="M60 44 Q70 36 80 44 Q90 52 100 44" stroke="#9b7fd4" stroke-width="1.5" fill="none" stroke-dasharray="3 2" opacity=".6"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">—</span><span class="ex-name">Pause active</span><span class="ex-time">90s</span></div>
+        <div class="ex-badge repos">RÉCUP</div>
+        <div class="ex-desc">Marche, respiration profonde. Étire rapidement les abdominaux (cobra 20s). Prépare le bloc fessiers.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="divider"></div>
+
+<!-- BLOC 3 : FESSIERS -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">Fessiers — circuit + intervalles</span>
+    <span class="section-duration">12 min</span>
+  </div>
+  <div class="section-note">Circuit de 3 exercices × 2 tours, puis 2 intervalles finaux.</div>
+  <div class="exercises">
+
+    <div class="ex" id="ex-14" onclick="toggleDone(14)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- fente arrière -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="72" cy="14" r="8" fill="#e8e4f0"/>
+          <rect x="65" y="22" width="14" height="22" rx="4" fill="#e8e4f0"/>
+          <!-- mains sur hanches -->
+          <ellipse cx="55" cy="36" rx="7" ry="5" fill="#e8e4f0"/>
+          <ellipse cx="89" cy="36" rx="7" ry="5" fill="#e8e4f0"/>
+          <!-- jambe avant fléchie 90° -->
+          <line x1="65" y1="44" x2="48" y2="62" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="48" y1="62" x2="44" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- genou arrière au sol -->
+          <line x1="79" y1="44" x2="112" y2="64" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="114" cy="66" rx="7" ry="5" fill="#e8e4f0"/>
+          <line x1="114" y1="70" x2="120" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- flèche descent -->
+          <line x1="72" y1="50" x2="72" y2="66" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <polygon points="72,66 69,60 75,60" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">13</span><span class="ex-name">Fente arrière</span><span class="ex-time">45s × 2</span></div>
+        <div class="ex-badge circuit">CIRCUIT</div>
+        <div class="ex-desc">Debout, recule un pied jusqu'au genou arrière près du sol. Remonte en poussant sur le pied avant. 10 de chaque côté. Fessiers, quadriceps, ischio.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-15" onclick="toggleDone(15)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- clamshell -->
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="22" cy="44" r="8" fill="#e8e4f0"/>
+          <!-- corps sur le côté -->
+          <path d="M28 48 Q80 60 130 54" stroke="#e8e4f0" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <!-- hanches, genoux empilés -->
+          <line x1="80" y1="58" x2="92" y2="72" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- genou haut ouvert comme coquillage -->
+          <line x1="80" y1="56" x2="70" y2="40" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="70" y1="40" x2="90" y2="34" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- genou bas au sol -->
+          <line x1="80" y1="60" x2="96" y2="74" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".5"/>
+          <!-- flèche ouverture -->
+          <path d="M78 56 Q68 44 72 38" stroke="#e8834a" stroke-width="1.5" fill="none"/>
+          <polygon points="72,38 76,44 69,44" fill="#e8834a"/>
+          <!-- bras appui tête -->
+          <line x1="28" y1="48" x2="24" y2="62" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">14</span><span class="ex-name">Clamshell (palourde)</span><span class="ex-time">45s × 2</span></div>
+        <div class="ex-badge circuit">CIRCUIT</div>
+        <div class="ex-desc">Sur le côté, genoux fléchis empilés. Ouvre le genou supérieur vers le plafond comme un coquillage. Pieds joints. 15 de chaque côté. Fessier moyen.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-16" onclick="toggleDone(16)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- donkey kick -->
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="28" cy="36" r="7" fill="#e8e4f0"/>
+          <!-- à 4 pattes, torse horizontal -->
+          <line x1="34" y1="40" x2="42" y2="46" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <rect x="42" y="44" width="52" height="9" rx="4" fill="#e8e4f0"/>
+          <line x1="42" y1="48" x2="34" y2="58" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <line x1="94" y1="48" x2="88" y2="62" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- jambe gauche au sol -->
+          <line x1="62" y1="53" x2="58" y2="68" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="58" y1="68" x2="60" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- jambe droite levée et tendue derrière -->
+          <line x1="88" y1="52" x2="124" y2="38" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="130" cy="36" rx="9" ry="5" fill="#e8e4f0" transform="rotate(-20 130 36)"/>
+          <!-- flèche lever -->
+          <line x1="124" y1="40" x2="136" y2="22" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <polygon points="136,22 132,28 138,28" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">15</span><span class="ex-name">Donkey kick</span><span class="ex-time">45s × 2</span></div>
+        <div class="ex-badge circuit">CIRCUIT</div>
+        <div class="ex-desc">À quatre pattes. Lève une jambe tendue derrière, talon vers le plafond, genou légèrement fléchi. 15 de chaque côté. Grand fessier ciblé.</div>
+      </div>
+    </div>
+
+    <!-- PAUSE ACTIVE 3 -->
+    <div class="ex repos-card" id="ex-17">
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="80" cy="22" r="8" fill="#e8e4f0" opacity=".6"/>
+          <rect x="73" y="30" width="14" height="22" rx="4" fill="#e8e4f0" opacity=".6"/>
+          <line x1="73" y1="36" x2="56" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="87" y1="36" x2="104" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="73" y1="52" x2="66" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+          <line x1="87" y1="52" x2="94" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".6"/>
+          <line x1="66" y1="70" x2="64" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <line x1="94" y1="70" x2="96" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+          <path d="M60 44 Q70 36 80 44 Q90 52 100 44" stroke="#9b7fd4" stroke-width="1.5" fill="none" stroke-dasharray="3 2" opacity=".6"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">—</span><span class="ex-name">Pause active</span><span class="ex-time">90s</span></div>
+        <div class="ex-badge repos">RÉCUP</div>
+        <div class="ex-desc">Marche, étire les fessiers (piriforme 20s chaque côté). Respiration profonde. Dernier sprint final.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-18" onclick="toggleDone(18)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- sumo squat pulse -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="80" cy="16" r="8" fill="#e8e4f0"/>
+          <rect x="73" y="24" width="14" height="14" rx="4" fill="#e8e4f0"/>
+          <!-- mains jointes devant -->
+          <line x1="73" y1="30" x2="60" y2="38" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <line x1="87" y1="30" x2="100" y2="38" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <ellipse cx="80" cy="40" rx="12" ry="6" fill="#e8e4f0" opacity=".4"/>
+          <!-- cuisses très écartées, genoux vers l'extérieur -->
+          <line x1="73" y1="38" x2="42" y2="60" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <line x1="87" y1="38" x2="118" y2="60" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="40" cy="62" r="7" fill="#e8e4f0"/>
+          <circle cx="120" cy="62" r="7" fill="#e8e4f0"/>
+          <!-- tibias verticaux pieds très écartés -->
+          <line x1="40" y1="69" x2="36" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <line x1="120" y1="69" x2="124" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/>
+          <!-- flèches pulse -->
+          <line x1="80" y1="44" x2="80" y2="56" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="2 2"/>
+          <polygon points="80,56 77,50 83,50" fill="#e8834a"/>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">16</span><span class="ex-name">Sumo squat pulse</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">Pieds très écartés, orteils tournés vers l'extérieur. Descend à 90°, fait de petits pulses de 5cm pendant 40s. Fessiers, adducteurs, intérieur cuisses.</div>
+      </div>
+    </div>
+
+    <div class="ex" id="ex-19" onclick="toggleDone(19)">
+      <div class="ex-check">✓</div>
+      <div class="ex-illus">
+        <svg width="160" height="100" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- pont fessier unilatéral rapide -->
+          <line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/>
+          <circle cx="22" cy="62" r="8" fill="#e8e4f0"/>
+          <rect x="28" y="68" width="26" height="8" rx="4" fill="#e8e4f0"/>
+          <path d="M54 72 Q72 44 98 66" stroke="#e8e4f0" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <!-- jambe fléchie au sol -->
+          <line x1="98" y1="70" x2="114" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <!-- jambe tendue levée -->
+          <line x1="90" y1="60" x2="130" y2="46" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="134" cy="44" rx="9" ry="5" fill="#e8e4f0" transform="rotate(-20 134 44)"/>
+          <!-- bras -->
+          <line x1="30" y1="74" x2="28" y2="88" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <line x1="50" y1="74" x2="56" y2="88" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/>
+          <!-- flèche montée rapide -->
+          <line x1="72" y1="54" x2="72" y2="32" stroke="#e8834a" stroke-width="2" stroke-dasharray="3 2"/>
+          <polygon points="72,32 69,38 75,38" fill="#e8834a"/>
+          <text x="76" y="36" font-family="monospace" font-size="7" fill="#e8834a">×15</text>
+        </svg>
+      </div>
+      <div class="ex-body">
+        <div class="ex-header"><span class="ex-num">17</span><span class="ex-name">Pont unilatéral rapide</span><span class="ex-time">40s / 20s repos</span></div>
+        <div class="ex-badge intervalle">INTERVALLE</div>
+        <div class="ex-desc">Pont sur une jambe, l'autre tendue levée. Monte/descend en rythme soutenu. 15-20 de chaque côté. Grand fessier + ischios. Séance finale.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  <button class="reset-btn" onclick="resetAll()">↺ Recommencer</button>
+  <span class="footer-note">Appuie sur Démarrer pour le mode focus plein écran</span>
+</div>
+</div>
+
+<script>
+const EX = [
+  { name:"Montées de genoux", time:"45s", duration:45, type:"circuit", desc:"Sur place, genoux montés à hauteur des hanches. Bras opposé en avant. Allure modérée. Active les fléchisseurs et le cardio.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><circle cx="80" cy="14" r="8" fill="#e8e4f0"/><rect x="73" y="22" width="14" height="22" rx="4" fill="#e8e4f0"/><line x1="73" y1="28" x2="54" y2="44" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="87" y1="28" x2="106" y2="38" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="73" y1="44" x2="62" y2="56" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="62" y1="56" x2="58" y2="74" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="87" y1="44" x2="96" y2="52" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="100" cy="50" rx="8" ry="6" fill="#e8e4f0"/><line x1="96" y1="58" x2="90" y2="74" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="44" x2="100" y2="30" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/><polygon points="100,30 97,36 103,36" fill="#e8834a"/></svg>` },
+  { name:"Squat poids du corps", time:"45s", duration:45, type:"circuit", desc:"Pieds écartés largeur épaules, bras devant. Descend jusqu'à 90° genoux, dos droit. Remonte en serrant les fessiers. 12-15 répétitions.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><circle cx="80" cy="16" r="8" fill="#e8e4f0"/><rect x="73" y="24" width="14" height="18" rx="4" fill="#e8e4f0"/><line x1="73" y1="30" x2="46" y2="36" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="87" y1="30" x2="114" y2="36" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="73" y1="42" x2="52" y2="58" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="87" y1="42" x2="108" y2="58" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="60" r="6" fill="#e8e4f0"/><circle cx="110" cy="60" r="6" fill="#e8e4f0"/><line x1="50" y1="66" x2="52" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="110" y1="66" x2="108" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="80" y1="40" x2="80" y2="56" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/><polygon points="80,56 77,50 83,50" fill="#e8834a"/></svg>` },
+  { name:"Rotations de bassin", time:"30s", duration:30, type:"circuit", desc:"Debout, mains sur les hanches. Grands cercles de bassin dans les deux sens. 10 dans chaque sens. Active les lombaires et les obliques.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><circle cx="80" cy="14" r="8" fill="#e8e4f0"/><rect x="73" y="22" width="14" height="20" rx="4" fill="#e8e4f0"/><ellipse cx="60" cy="38" rx="7" ry="5" fill="#e8e4f0"/><ellipse cx="100" cy="38" rx="7" ry="5" fill="#e8e4f0"/><ellipse cx="80" cy="46" rx="18" ry="10" stroke="#e8834a" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/><polygon points="98,46 94,42 96,50" fill="#e8834a"/><line x1="73" y1="52" x2="66" y2="72" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="87" y1="52" x2="94" y2="72" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="66" y1="72" x2="64" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="94" y1="72" x2="96" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/></svg>` },
+  { name:"Pont fessier lent", time:"45s", duration:45, type:"circuit", desc:"Sur le dos, genoux fléchis. Monte les hanches lentement en 3s, tiens 1s, descends en 3s. 6-8 répétitions. Réveille les fessiers en douceur.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><circle cx="22" cy="62" r="8" fill="#e8e4f0"/><rect x="28" y="68" width="26" height="8" rx="4" fill="#e8e4f0"/><path d="M54 72 Q76 44 104 68" stroke="#e8e4f0" stroke-width="7" fill="none" stroke-linecap="round"/><line x1="104" y1="72" x2="120" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="94" y1="76" x2="102" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="30" y1="74" x2="28" y2="88" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="74" x2="56" y2="88" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="76" y1="52" x2="76" y2="34" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/><polygon points="76,34 73,40 79,40" fill="#e8834a"/></svg>` },
+  { name:"Dead bug", time:"45s", duration:45, type:"circuit", desc:"Sur le dos, bras et jambes levés à 90°. Abaisse simultanément bras gauche + jambe droite sans toucher le sol. Alterner. 8 de chaque côté.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="20" cy="52" r="8" fill="#e8e4f0"/><rect x="26" y="56" width="48" height="9" rx="4" fill="#e8e4f0"/><line x1="36" y1="58" x2="28" y2="34" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><ellipse cx="26" cy="30" rx="5" ry="5" fill="#e8e4f0"/><line x1="60" y1="58" x2="70" y2="36" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><ellipse cx="72" cy="32" rx="5" ry="5" fill="#e8e4f0"/><line x1="44" y1="64" x2="36" y2="48" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="34" cy="44" rx="7" ry="5" fill="#e8e4f0" transform="rotate(-30 34 44)"/><line x1="64" y1="64" x2="88" y2="56" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="88" y1="56" x2="100" y2="68" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><path d="M80 44 Q90 36 96 46" stroke="#e8834a" stroke-width="1.5" fill="none"/><polygon points="96,46 90,46 93,40" fill="#e8834a"/></svg>` },
+  { name:"Crunch classique", time:"40s", duration:40, type:"intervalle", desc:"Sur le dos, genoux fléchis. Mains derrière la tête, enroule le torse vers les genoux. Expire en montant. Ne tire pas sur la nuque.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><line x1="90" y1="72" x2="120" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="100" y1="68" x2="128" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><rect x="54" y="76" width="42" height="8" rx="4" fill="#e8e4f0"/><path d="M56 76 Q50 62 42 52" stroke="#e8e4f0" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="38" cy="46" r="8" fill="#e8e4f0"/><line x1="38" y1="44" x2="30" y2="38" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="38" y1="44" x2="48" y2="38" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><path d="M56 76 Q46 66 40 52" stroke="#e8834a" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/><polygon points="40,52 44,58 37,57" fill="#e8834a"/></svg>` },
+  { name:"Crunch oblique", time:"40s", duration:40, type:"intervalle", desc:"Même position. Coude droit vers genou gauche en remontant, puis alterner. Rotation du torse. Obliques internes et externes.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><line x1="90" y1="72" x2="120" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="100" y1="68" x2="128" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><rect x="54" y="76" width="42" height="8" rx="4" fill="#e8e4f0"/><path d="M56 76 Q48 60 34 48" stroke="#e8e4f0" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="30" cy="42" r="8" fill="#e8e4f0"/><line x1="30" y1="44" x2="50" y2="56" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><ellipse cx="54" cy="58" rx="6" ry="5" fill="#e8e4f0"/><path d="M60 74 Q50 62 38 50" stroke="#e8834a" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/><polygon points="38,50 44,54 38,58" fill="#e8834a"/></svg>` },
+  { name:"Relevé de jambes", time:"40s", duration:40, type:"intervalle", desc:"Sur le dos, jambes tendues. Monte les jambes à 90° (ou 45° si difficile), redescends sans poser. Bas abdominaux. 10-12 reps.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="20" cy="58" r="8" fill="#e8e4f0"/><rect x="26" y="62" width="50" height="9" rx="4" fill="#e8e4f0"/><line x1="30" y1="68" x2="28" y2="82" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="72" y1="68" x2="76" y2="82" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="70" x2="100" y2="44" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="66" y1="70" x2="110" y2="42" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="104" cy="40" rx="9" ry="5" fill="#e8e4f0" transform="rotate(-25 104 40)"/><ellipse cx="114" cy="38" rx="9" ry="5" fill="#e8e4f0" transform="rotate(-25 114 38)"/><line x1="108" y1="46" x2="116" y2="28" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/><polygon points="116,28 112,34 118,34" fill="#e8834a"/></svg>` },
+  { name:"Mountain climber lent", time:"40s", duration:40, type:"intervalle", desc:"En planche haute (bras tendus). Ramène un genou vers la poitrine lentement, retourne, alterner. Contrôle le bassin. Core complet.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="22" cy="40" r="8" fill="#e8e4f0"/><line x1="28" y1="46" x2="46" y2="54" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><rect x="42" y="50" width="74" height="10" rx="5" fill="#e8e4f0"/><line x1="42" y1="54" x2="28" y2="62" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="116" y1="56" x2="90" y2="68" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="86" cy="70" rx="8" ry="5" fill="#e8e4f0"/><line x1="116" y1="58" x2="140" y2="66" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="144" cy="68" rx="8" ry="5" fill="#e8e4f0"/><path d="M90 64 Q100 54 110 58" stroke="#e8834a" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/><polygon points="110,58 104,56 106,62" fill="#e8834a"/></svg>` },
+  { name:"Pause active", time:"1 min 30s", duration:90, type:"repos", desc:"Marche sur place, respiration profonde. Secoue les bras et les jambes. Prépare le bloc suivant.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="80" cy="22" r="8" fill="#e8e4f0" opacity=".5"/><rect x="73" y="30" width="14" height="22" rx="4" fill="#e8e4f0" opacity=".5"/><line x1="73" y1="36" x2="56" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="87" y1="36" x2="104" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="73" y1="52" x2="66" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".5"/><line x1="87" y1="52" x2="94" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".5"/><line x1="66" y1="70" x2="64" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="94" y1="70" x2="96" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><path d="M60 44 Q70 36 80 44 Q90 52 100 44" stroke="#9b7fd4" stroke-width="1.5" fill="none" stroke-dasharray="3 2" opacity=".6"/></svg>` },
+  { name:"Hollow body hold", time:"40s", duration:40, type:"intervalle", desc:"Sur le dos. Bras au-dessus de la tête, jambes légèrement levées, lombes collés au sol. Tiens la position. Core profond et transverse.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="20" cy="50" r="8" fill="#e8e4f0"/><path d="M26 54 Q80 68 140 50" stroke="#e8e4f0" stroke-width="7" fill="none" stroke-linecap="round"/><line x1="26" y1="52" x2="10" y2="38" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><ellipse cx="8" cy="35" rx="5" ry="5" fill="#e8e4f0"/><line x1="130" y1="52" x2="148" y2="44" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="152" cy="42" rx="7" ry="5" fill="#e8e4f0" transform="rotate(-15 152 42)"/><line x1="70" y1="62" x2="70" y2="74" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/></svg>` },
+  { name:"Crunch latéral", time:"40s", duration:40, type:"intervalle", desc:"Sur le côté, jambes empilées. Soulève le torse latéralement, tiens 1s, redescends. 15 de chaque côté. Obliques ciblés.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="20" cy="54" r="8" fill="#e8e4f0"/><path d="M26 58 Q80 68 130 62" stroke="#e8e4f0" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M26 56 Q30 44 36 38" stroke="#e8e4f0" stroke-width="5" fill="none" stroke-linecap="round"/><line x1="36" y1="40" x2="26" y2="32" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="26" y1="58" x2="20" y2="70" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="130" y1="64" x2="148" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="125" y1="67" x2="144" y2="74" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="30" y1="52" x2="26" y2="38" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/><polygon points="26,38 28,44 22,44" fill="#e8834a"/></svg>` },
+  { name:"Planche avant tenue", time:"40s", duration:40, type:"intervalle", desc:"Avant-bras au sol, corps aligné, fessiers serrés. Tiens 40s sans bouger. Si trop dur : genoux au sol. Core complet, stabilisateurs.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="78" x2="150" y2="78" stroke="#2a2838" stroke-width="1.5"/><circle cx="22" cy="44" r="8" fill="#e8e4f0"/><line x1="28" y1="50" x2="48" y2="58" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><rect x="44" y="50" width="86" height="10" rx="5" fill="#e8e4f0"/><line x1="44" y1="54" x2="30" y2="64" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="134" cy="64" rx="8" ry="5" fill="#e8e4f0"/><line x1="20" y1="40" x2="138" y2="40" stroke="#e8834a" stroke-width="1" stroke-dasharray="4 2" opacity=".7"/></svg>` },
+  { name:"Pause active", time:"1 min 30s", duration:90, type:"repos", desc:"Marche, respiration profonde. Étire rapidement les abdominaux (cobra 20s). Prépare le bloc fessiers.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="80" cy="22" r="8" fill="#e8e4f0" opacity=".5"/><rect x="73" y="30" width="14" height="22" rx="4" fill="#e8e4f0" opacity=".5"/><line x1="73" y1="36" x2="56" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="87" y1="36" x2="104" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="73" y1="52" x2="66" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".5"/><line x1="87" y1="52" x2="94" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".5"/><line x1="66" y1="70" x2="64" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="94" y1="70" x2="96" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><path d="M60 44 Q70 36 80 44 Q90 52 100 44" stroke="#9b7fd4" stroke-width="1.5" fill="none" stroke-dasharray="3 2" opacity=".6"/></svg>` },
+  { name:"Fente arrière", time:"45s × 2", duration:45, type:"circuit", desc:"Debout, recule un pied jusqu'au genou arrière près du sol. Remonte en poussant sur le pied avant. 10 de chaque côté. Fessiers, quadriceps.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><circle cx="72" cy="14" r="8" fill="#e8e4f0"/><rect x="65" y="22" width="14" height="22" rx="4" fill="#e8e4f0"/><ellipse cx="55" cy="36" rx="7" ry="5" fill="#e8e4f0"/><ellipse cx="89" cy="36" rx="7" ry="5" fill="#e8e4f0"/><line x1="65" y1="44" x2="48" y2="62" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="48" y1="62" x2="44" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="79" y1="44" x2="112" y2="64" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="114" cy="66" rx="7" ry="5" fill="#e8e4f0"/><line x1="114" y1="70" x2="120" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="72" y1="50" x2="72" y2="66" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/><polygon points="72,66 69,60 75,60" fill="#e8834a"/></svg>` },
+  { name:"Clamshell", time:"45s × 2", duration:45, type:"circuit", desc:"Sur le côté, genoux fléchis empilés. Ouvre le genou supérieur vers le plafond. Pieds joints. 15 de chaque côté. Fessier moyen.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="22" cy="44" r="8" fill="#e8e4f0"/><path d="M28 48 Q80 60 130 54" stroke="#e8e4f0" stroke-width="6" fill="none" stroke-linecap="round"/><line x1="80" y1="58" x2="92" y2="72" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="80" y1="56" x2="70" y2="40" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="70" y1="40" x2="90" y2="34" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="80" y1="60" x2="96" y2="74" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".5"/><path d="M78 56 Q68 44 72 38" stroke="#e8834a" stroke-width="1.5" fill="none"/><polygon points="72,38 76,44 69,44" fill="#e8834a"/><line x1="28" y1="48" x2="24" y2="62" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/></svg>` },
+  { name:"Donkey kick", time:"45s × 2", duration:45, type:"circuit", desc:"À quatre pattes. Lève une jambe tendue derrière, talon vers le plafond. 15 de chaque côté. Grand fessier ciblé.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="28" cy="36" r="7" fill="#e8e4f0"/><line x1="34" y1="40" x2="42" y2="46" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><rect x="42" y="44" width="52" height="9" rx="4" fill="#e8e4f0"/><line x1="42" y1="48" x2="34" y2="58" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="94" y1="48" x2="88" y2="62" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="62" y1="53" x2="58" y2="68" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="58" y1="68" x2="60" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="88" y1="52" x2="124" y2="38" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="130" cy="36" rx="9" ry="5" fill="#e8e4f0" transform="rotate(-20 130 36)"/><line x1="124" y1="40" x2="136" y2="22" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="3 2"/><polygon points="136,22 132,28 138,28" fill="#e8834a"/></svg>` },
+  { name:"Pause active", time:"1 min 30s", duration:90, type:"repos", desc:"Marche, étire les fessiers (piriforme 20s chaque côté). Respiration profonde. Dernier sprint final.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="82" x2="150" y2="82" stroke="#2a2838" stroke-width="1.5"/><circle cx="80" cy="22" r="8" fill="#e8e4f0" opacity=".5"/><rect x="73" y="30" width="14" height="22" rx="4" fill="#e8e4f0" opacity=".5"/><line x1="73" y1="36" x2="56" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="87" y1="36" x2="104" y2="28" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="73" y1="52" x2="66" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".5"/><line x1="87" y1="52" x2="94" y2="70" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round" opacity=".5"/><line x1="66" y1="70" x2="64" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><line x1="94" y1="70" x2="96" y2="82" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round" opacity=".5"/><path d="M60 44 Q70 36 80 44 Q90 52 100 44" stroke="#9b7fd4" stroke-width="1.5" fill="none" stroke-dasharray="3 2" opacity=".6"/></svg>` },
+  { name:"Sumo squat pulse", time:"40s", duration:40, type:"intervalle", desc:"Pieds très écartés, orteils tournés vers l'extérieur. Descend à 90°, petits pulses de 5cm pendant 40s. Fessiers, adducteurs, intérieur cuisses.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><circle cx="80" cy="16" r="8" fill="#e8e4f0"/><rect x="73" y="24" width="14" height="14" rx="4" fill="#e8e4f0"/><line x1="73" y1="38" x2="42" y2="60" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="87" y1="38" x2="118" y2="60" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><circle cx="40" cy="62" r="7" fill="#e8e4f0"/><circle cx="120" cy="62" r="7" fill="#e8e4f0"/><line x1="40" y1="69" x2="36" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="120" y1="69" x2="124" y2="88" stroke="#e8e4f0" stroke-width="4" stroke-linecap="round"/><line x1="80" y1="44" x2="80" y2="56" stroke="#e8834a" stroke-width="1.5" stroke-dasharray="2 2"/><polygon points="80,56 77,50 83,50" fill="#e8834a"/></svg>` },
+  { name:"Pont unilatéral rapide", time:"40s", duration:40, type:"intervalle", desc:"Pont sur une jambe, l'autre tendue levée. Monte/descend en rythme soutenu. 15-20 de chaque côté. Grand fessier + ischios. Séance finale.", svg:`<svg width="160" height="100" viewBox="0 0 160 100" fill="none"><line x1="10" y1="88" x2="150" y2="88" stroke="#2a2838" stroke-width="1.5"/><circle cx="22" cy="62" r="8" fill="#e8e4f0"/><rect x="28" y="68" width="26" height="8" rx="4" fill="#e8e4f0"/><path d="M54 72 Q72 44 98 66" stroke="#e8e4f0" stroke-width="8" fill="none" stroke-linecap="round"/><line x1="98" y1="70" x2="114" y2="88" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><line x1="90" y1="60" x2="130" y2="46" stroke="#e8e4f0" stroke-width="5" stroke-linecap="round"/><ellipse cx="134" cy="44" rx="9" ry="5" fill="#e8e4f0" transform="rotate(-20 134 44)"/><line x1="30" y1="74" x2="28" y2="88" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="50" y1="74" x2="56" y2="88" stroke="#e8e4f0" stroke-width="3" stroke-linecap="round"/><line x1="72" y1="54" x2="72" y2="32" stroke="#e8834a" stroke-width="2" stroke-dasharray="3 2"/><polygon points="72,32 69,38 75,38" fill="#e8834a"/></svg>` }
+];
+
+const TOTAL=30*60;
+let currentEx=0,exTimeLeft=0,totalLeft=TOTAL,running=false,interval=null;
+function pad(n){return String(n).padStart(2,'0');}
+function fmt(s){return pad(Math.floor(s/60))+':'+pad(s%60);}
+
+function renderFocus(){
+  const ex=EX[currentEx];if(!ex)return;
+  document.getElementById('focusTimer').textContent=fmt(totalLeft);
+  document.getElementById('focusTimer').className='focus-timer'+(running?' running':'');
+  document.getElementById('focusProgressFill').style.width=((TOTAL-totalLeft)/TOTAL*100)+'%';
+  document.getElementById('focusExName').textContent=ex.name;
+  document.getElementById('focusExMeta').textContent='Exercice '+(currentEx+1)+' / '+EX.length;
+  document.getElementById('focusNum').textContent='EXERCICE '+(currentEx+1)+' / '+EX.length;
+  document.getElementById('focusName').textContent=ex.name;
+  const typeEl=document.getElementById('focusType');
+  const typeLabels={circuit:'● CIRCUIT',intervalle:'▶ INTERVALLE',repos:'◌ PAUSE ACTIVE'};
+  typeEl.textContent=typeLabels[ex.type]||'';
+  typeEl.className='focus-ex-type '+ex.type;
+  const badge=document.getElementById('focusExTimer');
+  badge.textContent=fmt(exTimeLeft);
+  badge.className='focus-ex-time-badge'+(exTimeLeft<=5?' urgent':'');
+  const bigSvg=ex.svg.replace(/width="160"/,'width="300"').replace(/height="100"/,'height="188"');
+  document.getElementById('focusSvg').innerHTML=bigSvg;
+  document.getElementById('focusDesc').textContent=ex.desc;
+  buildQueue();
+}
+
+function buildQueue(){
+  const q=document.getElementById('focusQueue');q.innerHTML='';
+  for(let i=0;i<EX.length;i++){
+    if(i===currentEx)continue;
+    const isDone=i<currentEx,ex=EX[i];
+    const item=document.createElement('div');
+    item.className='focus-queue-item'+(isDone?' done-item':'')+(ex.type==='repos'?' repos-item':'');
+    const typeBadge=`<span class="q-type-badge ${ex.type}">${ex.type==='repos'?'RÉCUP':ex.type.toUpperCase()}</span>`;
+    item.innerHTML=`<div class="q-num">${String(i+1).padStart(2,'0')}</div><div class="q-svg">${ex.svg}</div><div class="q-info"><div class="q-name">${ex.name}</div><div class="q-time">${ex.time} ${typeBadge}</div></div>${isDone?'<div class="q-done-mark">✓</div>':''}`;
+    q.appendChild(item);
+  }
+  const nextEx=EX[currentEx+1];
+  document.getElementById('focusNextLabel').textContent=nextEx?'ENSUITE → '+nextEx.name:'DERNIER EXERCICE';
+}
+
+function showFinish(){
+  document.getElementById('focusHero').style.display='none';
+  document.getElementById('focusNextLabel').style.display='none';
+  document.getElementById('focusQueue').style.display='none';
+  document.getElementById('focusFinish').classList.add('visible');
+  document.getElementById('focusExName').textContent='🔥 Séance terminée !';
+  document.getElementById('focusExMeta').textContent='30 min complètes';
+  document.getElementById('focusTimer').textContent='00:00';
+}
+
+function tick(){
+  if(totalLeft>0)totalLeft--;
+  if(exTimeLeft>0)exTimeLeft--;
+  if(exTimeLeft===0&&currentEx<EX.length){
+    const el=document.getElementById('ex-'+currentEx);
+    if(el){el.classList.add('done');el.classList.remove('active');}
+    currentEx++;
+    if(currentEx<EX.length)exTimeLeft=EX[currentEx].duration;
+  }
+  const disp=document.getElementById('timerDisplay');
+  disp.textContent=fmt(totalLeft);
+  disp.className='timer-display'+(running?' running':'')+(totalLeft===0?' done':'');
+  document.getElementById('progressFill').style.width=((TOTAL-totalLeft)/TOTAL*100)+'%';
+  if(currentEx<EX.length){
+    document.getElementById('currentExName').textContent=EX[currentEx].name;
+    document.getElementById('currentExMeta').textContent='Exercice '+(currentEx+1)+' / '+EX.length+' · '+fmt(exTimeLeft)+' restant';
+    document.querySelectorAll('.ex').forEach((el,i)=>{if(!el.classList.contains('repos-card'))el.classList.toggle('active',i===currentEx&&running);});
+  }
+  if(document.getElementById('focusMode').classList.contains('visible'))renderFocus();
+  if(totalLeft===0||currentEx>=EX.length){
+    clearInterval(interval);running=false;
+    document.getElementById('startBtn').style.display='';
+    document.getElementById('stopBtn').style.display='none';
+    document.getElementById('startBtn').textContent='Terminé 🔥';
+    document.getElementById('startBtn').disabled=true;
+    document.querySelectorAll('.ex').forEach(el=>el.classList.add('done'));
+    showFinish();
+  }
+}
+
+function startRoutine(){
+  if(running)return;running=true;
+  if(totalLeft===TOTAL){currentEx=0;exTimeLeft=EX[0].duration;}
+  document.getElementById('startBtn').style.display='none';
+  document.getElementById('stopBtn').style.display='';
+  document.getElementById('focusMode').classList.add('visible');
+  document.getElementById('focusHero').style.display='';
+  document.getElementById('focusNextLabel').style.display='';
+  document.getElementById('focusQueue').style.display='';
+  document.getElementById('focusFinish').classList.remove('visible');
+  renderFocus();
+  interval=setInterval(tick,1000);
+}
+function exitFocus(){
+  document.getElementById('focusMode').classList.remove('visible');
+  const el=document.getElementById('ex-'+currentEx);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function stopRoutine(){
+  clearInterval(interval);running=false;
+  document.getElementById('startBtn').style.display='';
+  document.getElementById('startBtn').textContent='Reprendre';
+  document.getElementById('stopBtn').style.display='none';
+  document.querySelectorAll('.ex').forEach((el,i)=>{if(i===currentEx)el.classList.remove('active');});
+}
+function toggleDone(i){
+  const el=document.getElementById('ex-'+i);
+  if(!el||el.classList.contains('active')||el.classList.contains('repos-card'))return;
+  el.classList.toggle('done');
+}
+function resetAll(){
+  clearInterval(interval);running=false;
+  currentEx=0;exTimeLeft=EX[0].duration;totalLeft=TOTAL;
+  document.getElementById('focusMode').classList.remove('visible');
+  document.getElementById('startBtn').style.display='';
+  document.getElementById('startBtn').textContent='Démarrer';
+  document.getElementById('startBtn').disabled=false;
+  document.getElementById('stopBtn').style.display='none';
+  document.getElementById('progressFill').style.width='0%';
+  document.getElementById('timerDisplay').textContent='30:00';
+  document.getElementById('timerDisplay').className='timer-display';
+  document.getElementById('currentExName').textContent='Prêt à commencer';
+  document.getElementById('currentExMeta').textContent='Appuie sur Démarrer';
+  document.querySelectorAll('.ex').forEach(el=>el.classList.remove('done','active'));
+}
+</script>
+</body>
+</html>
