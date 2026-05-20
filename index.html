@@ -3,513 +3,211 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SPORTS !!!</title>
+  <title>ZENPOF</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --noir: #0a0a0a;
       --blanc: #f5f2ec;
       --acid: #c8f23a;
-      --gris: #1a1a1a;
-      --gris2: #2a2a2a;
-      --text-muted: #888;
+      --gris: #141414;
+      --gris2: #222;
+      --muted: #666;
     }
-
-    html { scroll-behavior: smooth; }
-
+    html, body { height: 100%; }
     body {
       background: var(--noir);
       color: var(--blanc);
       font-family: 'DM Sans', sans-serif;
       font-weight: 300;
-      overflow-x: hidden;
+      overflow: hidden;
     }
-
-    /* HEADER */
-    header {
+    .bg-grid {
       position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 3rem;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      background: rgba(10,10,10,0.85);
-      backdrop-filter: blur(12px);
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      z-index: 0;
     }
-
+    .site {
+      position: relative;
+      z-index: 1;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+    header {
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
     .logo {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.8rem;
-      letter-spacing: 0.12em;
+      font-size: 2.2rem;
+      letter-spacing: 0.2em;
       color: var(--blanc);
       text-decoration: none;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.05s forwards;
     }
-
     .logo span { color: var(--acid); }
-
-    nav a {
-      font-size: 0.8rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      text-decoration: none;
-      margin-left: 2rem;
-      transition: color 0.2s;
+    .tuiles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      padding: 0 2px;
     }
-    nav a:hover { color: var(--acid); }
-
-    /* HERO */
-    .hero {
-      min-height: 100vh;
+    .tuile {
+      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 0 3rem 5rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-    }
-
-    .hero-bg::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 60% 60% at 70% 40%, rgba(200,242,58,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(200,242,58,0.04) 0%, transparent 60%);
-    }
-
-    .grid-overlay {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
-
-    .hero-tag {
-      font-size: 0.75rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--acid);
-      margin-bottom: 1.5rem;
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
-
-    .hero-tag::before {
-      content: '';
-      display: block;
-      width: 32px;
-      height: 1px;
-      background: var(--acid);
-    }
-
-    h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(5rem, 14vw, 13rem);
-      line-height: 0.88;
-      letter-spacing: -0.01em;
-      position: relative;
-      z-index: 1;
-      color: var(--blanc);
-    }
-
-    h1 em {
-      font-style: normal;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(245,242,236,0.3);
-    }
-
-    .hero-sub {
-      margin-top: 2.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-sub p {
-      font-size: 1rem;
-      color: var(--text-muted);
-      max-width: 360px;
-      line-height: 1.7;
-      font-style: italic;
-    }
-
-    .scroll-hint {
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .scroll-hint::after {
-      content: '';
-      display: block;
-      width: 1px;
-      height: 48px;
-      background: linear-gradient(to bottom, var(--text-muted), transparent);
-      animation: scrollLine 1.8s ease-in-out infinite;
-    }
-
-    @keyframes scrollLine {
-      0% { opacity: 0; transform: scaleY(0); transform-origin: top; }
-      50% { opacity: 1; transform: scaleY(1); }
-      100% { opacity: 0; transform: scaleY(0); transform-origin: bottom; }
-    }
-
-    /* SECTION PROGRAMMES */
-    .section-programmes {
-      padding: 6rem 3rem;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 3.5rem;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding-top: 2rem;
-    }
-
-    .section-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--acid);
-    }
-
-    .section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 5rem);
-      letter-spacing: 0.04em;
-      color: var(--blanc);
-    }
-
-    /* CARDS GRILLE */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 1.5px;
-    }
-
-    .card {
-      position: relative;
+      padding: 3rem 2.5rem;
+      background: var(--gris);
+      text-decoration: none;
       overflow: hidden;
       cursor: pointer;
-      text-decoration: none;
-      display: block;
-      background: var(--gris);
-      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transition: background 0.35s ease;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.7s ease forwards;
     }
-
-    .card:hover { transform: translateY(-4px); }
-    .card:hover .card-inner { background: var(--gris2); }
-    .card:hover .card-icon { color: var(--acid); }
-    .card:hover .card-arrow { transform: translate(3px, -3px); color: var(--acid); }
-
-    .card-inner {
-      padding: 2.5rem 2rem;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 260px;
-      transition: background 0.3s;
-    }
-
-    .card-1 { grid-column: span 5; }
-    .card-2 { grid-column: span 4; }
-    .card-3 { grid-column: span 3; }
-    .card-4 { grid-column: span 6; }
-    .card-5 { grid-column: span 6; }
-
-    .card-icon {
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
-      color: rgba(245,242,236,0.25);
-      transition: color 0.3s;
-      line-height: 1;
-    }
-
-    .card-cat {
-      font-size: 0.68rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .card-name {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(1.4rem, 2.5vw, 2rem);
-      letter-spacing: 0.05em;
-      color: var(--blanc);
-      line-height: 1.1;
-    }
-
-    .card-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 2rem;
-    }
-
-    .card-duration {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-
-    .card-tag {
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      padding: 0.3rem 0.8rem;
-      border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(245,242,236,0.5);
-    }
-
-    .card-arrow {
-      font-size: 1.2rem;
-      color: rgba(245,242,236,0.2);
-      transition: transform 0.3s, color 0.3s;
-    }
-
-    /* FEATURED TAG */
-    .card-featured-badge {
+    .tuile:nth-child(1) { animation-delay: 0.1s; }
+    .tuile:nth-child(2) { animation-delay: 0.22s; }
+    .tuile:nth-child(3) { animation-delay: 0.34s; }
+    .tuile::before {
+      content: '';
       position: absolute;
-      top: 1.2rem;
-      right: 1.2rem;
-      background: var(--acid);
-      color: var(--noir);
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .tuile-sports::before  { background: radial-gradient(ellipse at 30% 70%, rgba(200,242,58,0.12), transparent 65%); }
+    .tuile-musique::before { background: radial-gradient(ellipse at 50% 60%, rgba(180,100,255,0.12), transparent 65%); }
+    .tuile-actu::before    { background: radial-gradient(ellipse at 70% 70%, rgba(255,140,60,0.12), transparent 65%); }
+    .tuile:hover { background: var(--gris2); }
+    .tuile:hover::before { opacity: 1; }
+    .tuile:hover .tuile-num { color: rgba(245,242,236,0.12); }
+    .tuile:hover .tuile-arrow { transform: translate(4px, -4px); opacity: 1; }
+    .tuile-sports:hover  .tuile-title { color: var(--acid); }
+    .tuile-musique:hover .tuile-title { color: #c87dff; }
+    .tuile-actu:hover    .tuile-title { color: #ff8c3c; }
+    .tuile-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 5rem;
+      line-height: 1;
+      color: rgba(245,242,236,0.05);
+      position: absolute;
+      top: 2rem;
+      left: 2.5rem;
+      transition: color 0.3s;
+      user-select: none;
+    }
+    .tuile-content { position: relative; z-index: 1; }
+    .tuile-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .tuile-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 5vw, 5.5rem);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      color: var(--blanc);
+      transition: color 0.3s;
+    }
+    .tuile-arrow {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 2.5rem;
+      font-size: 1.4rem;
+      color: var(--muted);
+      opacity: 0.4;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .coming-soon { pointer-events: none; opacity: 0.4; }
+    .badge {
+      display: inline-block;
       font-size: 0.6rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      font-weight: 500;
-      padding: 0.25rem 0.65rem;
+      padding: 0.2rem 0.7rem;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(245,242,236,0.4);
+      margin-bottom: 0.8rem;
     }
-
-    /* FOOTER */
     footer {
-      border-top: 1px solid rgba(255,255,255,0.07);
-      padding: 3rem;
+      padding: 1.5rem 3rem;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.05);
     }
-
-    .footer-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.2rem;
-      letter-spacing: 0.12em;
-      color: rgba(245,242,236,0.25);
-    }
-
-    .footer-logo span { color: rgba(200,242,58,0.4); }
-
     footer p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-style: italic;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
     }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      header { padding: 1rem 1.5rem; }
-      nav a { margin-left: 1rem; font-size: 0.7rem; }
-
-      .hero { padding: 0 1.5rem 4rem; min-height: 100svh; }
-
-      .hero-sub { flex-direction: column; gap: 2rem; align-items: flex-start; }
-
-      .section-programmes { padding: 4rem 1.5rem; }
-
-      .section-header { flex-direction: column; gap: 0.5rem; }
-
-      .cards-grid { grid-template-columns: 1fr; gap: 1px; }
-      .card-1, .card-2, .card-3, .card-4, .card-5 { grid-column: span 1; }
-
-      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem 1.5rem; }
-    }
-
-    /* ANIMATIONS ENTRÉE */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(24px);
-      animation: fadeIn 0.8s ease forwards;
-    }
-    .fade-in:nth-child(1) { animation-delay: 0.1s; }
-    .fade-in:nth-child(2) { animation-delay: 0.25s; }
-    .fade-in:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes fadeIn {
+    @keyframes fadeUp {
       to { opacity: 1; transform: translateY(0); }
     }
-
-    .cards-grid .card {
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeIn 0.6s ease forwards;
+    @media (max-width: 768px) {
+      body { overflow: auto; }
+      .site { height: auto; }
+      .tuiles { grid-template-columns: 1fr; }
+      .tuile { min-height: 200px; padding: 2rem 1.5rem 2.5rem; }
+      .tuile-title { font-size: clamp(3rem, 15vw, 5rem); }
+      header { padding: 1.5rem; }
+      footer { padding: 1.2rem 1.5rem; }
     }
-    .cards-grid .card:nth-child(1) { animation-delay: 0.1s; }
-    .cards-grid .card:nth-child(2) { animation-delay: 0.2s; }
-    .cards-grid .card:nth-child(3) { animation-delay: 0.3s; }
-    .cards-grid .card:nth-child(4) { animation-delay: 0.4s; }
-    .cards-grid .card:nth-child(5) { animation-delay: 0.5s; }
   </style>
 </head>
 <body>
-
-  <!-- HEADER -->
-  <header>
-    <a href="index.html" class="logo">SPORTS<span>!!!</span></a>
-    <nav>
-      <a href="#programmes">Programmes</a>
-    </nav>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg">
-      <div class="grid-overlay"></div>
+  <div class="bg-grid"></div>
+  <div class="site">
+    <header>
+      <a href="index.html" class="logo">ZEN<span>POF</span></a>
+    </header>
+    <div class="tuiles">
+      <a href="sports.html" class="tuile tuile-sports">
+        <span class="tuile-num">01</span>
+        <div class="tuile-content">
+          <p class="tuile-label">Entraînement</p>
+          <h2 class="tuile-title">SPORTS</h2>
+        </div>
+        <span class="tuile-arrow">↗</span>
+      </a>
+      <div class="tuile tuile-musique coming-soon">
+        <span class="tuile-num">02</span>
+        <div class="tuile-content">
+          <span class="badge">Bientôt</span>
+          <p class="tuile-label">Découvertes</p>
+          <h2 class="tuile-title">MUSIQUE</h2>
+        </div>
+      </div>
+      <div class="tuile tuile-actu coming-soon">
+        <span class="tuile-num">03</span>
+        <div class="tuile-content">
+          <span class="badge">Bientôt</span>
+          <p class="tuile-label">Le monde</p>
+          <h2 class="tuile-title">ACTU</h2>
+        </div>
+      </div>
     </div>
-
-    <h1 class="fade-in">
-      SPORTS<br />
-      <em>!!!</em>
-    </h1>
-
-    <div class="hero-sub fade-in">
-      <div class="scroll-hint">Défiler</div>
-    </div>
-
-    <iframe
-      src="https://www.youtube.com/embed/QjL7D33xpS4?si=DLquVM_xW1KZtpBf&start=51&autoplay=1"
-      title="YouTube video player"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen
-      style="position:absolute; width:0; height:0; border:0; opacity:0; pointer-events:none;"
-    ></iframe>
-  </section>
-
-  <!-- PROGRAMMES -->
-  <section class="section-programmes" id="programmes">
-    <div class="section-header">
-      <span class="section-label">Programmes</span>
-      <h2 class="section-title">Les séances</h2>
-    </div>
-
-    <div class="cards-grid">
-
-      <!-- Plan Trail GRF92k -->
-      <a href="plan-trail-92k.html" class="card card-1">
-        <div class="card-featured-badge">Plan complet</div>
-        <div class="card-inner">
-          <div>
-            <div class="card-icon">🏔</div>
-            <p class="card-cat">Trail running</p>
-            <p class="card-name">Plan GRF92k</p>
-          </div>
-          <div class="card-bottom">
-            <span class="card-duration">Programme long</span>
-            <span class="card-arrow">↗</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Cross-Training -->
-      <a href="cross-training-92k.html" class="card card-2">
-        <div class="card-inner">
-          <div>
-            <div class="card-icon">⚡</div>
-            <p class="card-cat">Force & cardio</p>
-            <p class="card-name">Cross-Training GRF92k</p>
-          </div>
-          <div class="card-bottom">
-            <span class="card-tag">Intensif</span>
-            <span class="card-arrow">↗</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Abdos & Fessiers -->
-      <a href="abdos-fessiers.html" class="card card-3">
-        <div class="card-inner">
-          <div>
-            <div class="card-icon">🔥</div>
-            <p class="card-cat">Renforcement</p>
-            <p class="card-name">Abdos &amp; Fessiers</p>
-          </div>
-          <div class="card-bottom">
-            <span class="card-duration">30 min</span>
-            <span class="card-arrow">↗</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Routine Matinale -->
-      <a href="routine-matinale.html" class="card card-4">
-        <div class="card-inner">
-          <div>
-            <div class="card-icon">🌅</div>
-            <p class="card-cat">Réveil actif</p>
-            <p class="card-name">Routine Matinale</p>
-          </div>
-          <div class="card-bottom">
-            <span class="card-duration">15 min</span>
-            <span class="card-tag">Quotidien</span>
-            <span class="card-arrow">↗</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Yoga du Soir -->
-      <a href="yoga-soir.html" class="card card-5">
-        <div class="card-inner">
-          <div>
-            <div class="card-icon">🌙</div>
-            <p class="card-cat">Récupération</p>
-            <p class="card-name">Yoga du Soir</p>
-          </div>
-          <div class="card-bottom">
-            <span class="card-duration">15 min</span>
-            <span class="card-tag">Détente</span>
-            <span class="card-arrow">↗</span>
-          </div>
-        </div>
-      </a>
-
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <span class="footer-logo">SPORTS<span>!!!</span></span>
-  </footer>
-
+    <footer>
+      <p>www.zenpof.art</p>
+    </footer>
+  </div>
 </body>
 </html>
