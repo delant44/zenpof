@@ -6,13 +6,13 @@
   <title>ZENPOF</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --noir: #0a0a0a;
       --blanc: #f5f2ec;
-      --acid: #c8f23a;
+      --accent: #e8e4dc;
       --gris: #141414;
       --gris2: #222;
       --muted: #666;
@@ -25,16 +25,7 @@
       font-weight: 300;
       overflow: hidden;
     }
-    .bg-grid {
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: 80px 80px;
-      pointer-events: none;
-      z-index: 0;
-    }
+    .bg-grid { display: none; }
     .site {
       position: relative;
       z-index: 1;
@@ -49,7 +40,7 @@
       align-items: center;
     }
     .logo {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 2.2rem;
       letter-spacing: 0.2em;
       color: var(--blanc);
@@ -57,7 +48,7 @@
       opacity: 0;
       animation: fadeUp 0.6s ease 0.05s forwards;
     }
-    .logo span { color: var(--acid); }
+    .logo span { color: var(--accent); }
     .tuiles {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -89,18 +80,18 @@
       opacity: 0;
       transition: opacity 0.35s ease;
     }
-    .tuile-sports::before  { background: radial-gradient(ellipse at 30% 70%, rgba(200,242,58,0.12), transparent 65%); }
+    .tuile-sports::before  { background: radial-gradient(ellipse at 30% 70%, rgba(232,228,220,0.12), transparent 65%); }
     .tuile-musique::before { background: radial-gradient(ellipse at 50% 60%, rgba(180,100,255,0.12), transparent 65%); }
     .tuile-actu::before    { background: radial-gradient(ellipse at 70% 70%, rgba(255,140,60,0.12), transparent 65%); }
     .tuile:hover { background: var(--gris2); }
     .tuile:hover::before { opacity: 1; }
     .tuile:hover .tuile-num { color: rgba(245,242,236,0.12); }
     .tuile:hover .tuile-arrow { transform: translate(4px, -4px); opacity: 1; }
-    .tuile-sports:hover  .tuile-title { color: var(--acid); }
-    .tuile-musique:hover .tuile-title { color: #c87dff; }
+    .tuile-sports:hover  .tuile-title { color: var(--accent); }
+    .tuile-musique:hover .tuile-title { color: #e8e4dc; }
     .tuile-actu:hover    .tuile-title { color: #ff8c3c; }
     .tuile-num {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 5rem;
       line-height: 1;
       color: rgba(245,242,236,0.05);
@@ -119,9 +110,9 @@
       margin-bottom: 0.6rem;
     }
     .tuile-title {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: clamp(3rem, 5vw, 5.5rem);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.01em;
       line-height: 1;
       color: var(--blanc);
       transition: color 0.3s;
@@ -186,7 +177,7 @@
           <p class="tuile-label">Entraînement</p>
           <h2 class="tuile-title">SPORTS</h2>
         </div>
-        <span class="tuile-arrow">↗</span>
+        
       </a>
       <div class="tuile tuile-musique coming-soon">
         <span class="tuile-num">02</span>

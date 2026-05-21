@@ -6,14 +6,14 @@
   <title>SPORTS !!!</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --noir: #0a0a0a;
       --blanc: #f5f2ec;
-      --acid: #c8f23a;
+      --accent: #e8e4dc;
       --gris: #1a1a1a;
       --gris2: #2a2a2a;
       --text-muted: #888;
@@ -44,14 +44,14 @@
     }
 
     .logo {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 1.8rem;
       letter-spacing: 0.12em;
       color: var(--blanc);
       text-decoration: none;
     }
 
-    .logo span { color: var(--acid); }
+    .logo span { color: var(--accent); }
 
     nav a {
       font-size: 0.8rem;
@@ -62,7 +62,7 @@
       margin-left: 2rem;
       transition: color 0.2s;
     }
-    nav a:hover { color: var(--acid); }
+    nav a:hover { color: var(--accent); }
 
     /* HERO */
     .hero {
@@ -86,24 +86,17 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 60% 60% at 70% 40%, rgba(200,242,58,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(200,242,58,0.04) 0%, transparent 60%);
+        radial-gradient(ellipse 60% 60% at 70% 40%, rgba(232,228,220,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(232,228,220,0.04) 0%, transparent 60%);
     }
 
-    .grid-overlay {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
+    
 
     .hero-tag {
       font-size: 0.75rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--acid);
+      color: var(--accent);
       margin-bottom: 1.5rem;
       position: relative;
       z-index: 1;
@@ -117,11 +110,11 @@
       display: block;
       width: 32px;
       height: 1px;
-      background: var(--acid);
+      background: var(--accent);
     }
 
     h1 {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: clamp(5rem, 14vw, 13rem);
       line-height: 0.88;
       letter-spacing: -0.01em;
@@ -197,13 +190,13 @@
       font-size: 0.75rem;
       letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: var(--acid);
+      color: var(--accent);
     }
 
     .section-title {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: clamp(2.5rem, 6vw, 5rem);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.01em;
       color: var(--blanc);
     }
 
@@ -226,8 +219,8 @@
 
     .card:hover { transform: translateY(-4px); }
     .card:hover .card-inner { background: var(--gris2); }
-    .card:hover .card-icon { color: var(--acid); }
-    .card:hover .card-arrow { transform: translate(3px, -3px); color: var(--acid); }
+    .card:hover .card-icon { color: var(--accent); }
+    .card:hover .card-arrow { transform: translate(3px, -3px); color: var(--accent); }
 
     .card-inner {
       padding: 2.5rem 2rem;
@@ -262,9 +255,9 @@
     }
 
     .card-name {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: clamp(1.4rem, 2.5vw, 2rem);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.01em;
       color: var(--blanc);
       line-height: 1.1;
     }
@@ -302,7 +295,7 @@
       position: absolute;
       top: 1.2rem;
       right: 1.2rem;
-      background: var(--acid);
+      background: var(--accent);
       color: var(--noir);
       font-size: 0.6rem;
       letter-spacing: 0.2em;
@@ -321,13 +314,13 @@
     }
 
     .footer-logo {
-      font-family: 'Bebas Neue', sans-serif;
+      font-family: 'Space Mono', monospace;
       font-size: 1.2rem;
       letter-spacing: 0.12em;
       color: rgba(245,242,236,0.25);
     }
 
-    .footer-logo span { color: rgba(200,242,58,0.4); }
+    .footer-logo span { color: rgba(232,228,220,0.4); }
 
     footer p {
       font-size: 0.75rem;
@@ -436,7 +429,7 @@
           </div>
           <div class="card-bottom">
             <span class="card-duration">Programme long</span>
-            <span class="card-arrow">↗</span>
+            
           </div>
         </div>
       </a>
@@ -451,7 +444,7 @@
           </div>
           <div class="card-bottom">
             <span class="card-tag">Intensif</span>
-            <span class="card-arrow">↗</span>
+            
           </div>
         </div>
       </a>
@@ -466,7 +459,7 @@
           </div>
           <div class="card-bottom">
             <span class="card-duration">30 min</span>
-            <span class="card-arrow">↗</span>
+            
           </div>
         </div>
       </a>
@@ -482,7 +475,7 @@
           <div class="card-bottom">
             <span class="card-duration">15 min</span>
             <span class="card-tag">Quotidien</span>
-            <span class="card-arrow">↗</span>
+            
           </div>
         </div>
       </a>
@@ -498,7 +491,7 @@
           <div class="card-bottom">
             <span class="card-duration">15 min</span>
             <span class="card-tag">Détente</span>
-            <span class="card-arrow">↗</span>
+            
           </div>
         </div>
       </a>
