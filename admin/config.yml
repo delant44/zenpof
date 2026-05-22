@@ -1,0 +1,63 @@
+backend:
+  name: github
+  repo: delant44/sports
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "chroniques"
+    label: "Chroniques"
+    folder: "_chroniques"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titre de l'album", name: "titre", widget: "string" }
+      - { label: "Artiste", name: "artiste", widget: "string" }
+      - { label: "Pochette", name: "pochette", widget: "image", required: false }
+      - { label: "Genre", name: "genre", widget: "string", required: false }
+      - { label: "Année de sortie", name: "annee", widget: "string", required: false }
+      - { label: "Note", name: "note", widget: "select", options: ["1","2","3","4","5"] }
+      - { label: "À écouter / partager (lien)", name: "lien", widget: "string", required: false, hint: "Lien Spotify, YouTube, etc." }
+      - { label: "Texte", name: "body", widget: "markdown" }
+      - { label: "Date de publication", name: "date", widget: "datetime" }
+
+  - name: "reports"
+    label: "Reports"
+    folder: "_reports"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Artiste / Événement", name: "artiste", widget: "string" }
+      - { label: "Lieu", name: "lieu", widget: "string" }
+      - { label: "Date du concert", name: "date_concert", widget: "date" }
+      - { label: "Photo", name: "photo", widget: "image", required: false }
+      - { label: "Compte-rendu", name: "body", widget: "markdown" }
+      - { label: "Date de publication", name: "date", widget: "datetime" }
+
+  - name: "retro"
+    label: "Dans le rétro"
+    folder: "_retro"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titre de l'album", name: "titre", widget: "string" }
+      - { label: "Artiste", name: "artiste", widget: "string" }
+      - { label: "Pochette", name: "pochette", widget: "image", required: false }
+      - { label: "Année de l'album", name: "annee", widget: "string" }
+      - { label: "Souvenir / anecdote (sous-titre)", name: "souvenir", widget: "string", required: false, hint: "Une phrase qui résume ce que cet album représente pour toi" }
+      - { label: "Texte perso", name: "body", widget: "markdown" }
+      - { label: "Date de publication", name: "date", widget: "datetime" }
+
+  - name: "humeurs"
+    label: "Humeurs musicales"
+    folder: "_humeurs"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titre de la playlist", name: "titre", widget: "string" }
+      - { label: "Mois / Période", name: "periode", widget: "string", hint: "Ex: Mai 2026" }
+      - { label: "URL Spotify", name: "spotify_url", widget: "string", hint: "L'URL de ta playlist sur open.spotify.com" }
+      - { label: "Texte perso", name: "body", widget: "markdown" }
+      - { label: "Date de publication", name: "date", widget: "datetime" }
